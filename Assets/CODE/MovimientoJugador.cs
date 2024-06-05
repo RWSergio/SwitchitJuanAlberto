@@ -27,6 +27,7 @@ public class MovimientoJugador : MonoBehaviour
     public bool IsGrounded = false;
     public Vector3 publicdireccion = Vector3.zero;
     public Transform ref_rotation;
+    public bool stop = false;
     private void Start()
     {
         controller = gameObject.GetComponent<CharacterController>();
@@ -35,13 +36,17 @@ public class MovimientoJugador : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (miAnim.GetCurrentAnimatorStateInfo(0).IsTag("Locomotion"))
+        if (stop == false)
         {
-            Locomotion();
+            if (miAnim.GetCurrentAnimatorStateInfo(0).IsTag("Locomotion"))
+            {
+                Locomotion();
+            }
         }
         AnimatorValues();
 
-        windforce(publicdireccion);
+            windforce(publicdireccion);
+       
     }
     void LateUpdate()
     {

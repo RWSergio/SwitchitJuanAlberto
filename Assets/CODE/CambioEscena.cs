@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class CambioEscena : MonoBehaviour
 {
@@ -17,7 +18,10 @@ public class CambioEscena : MonoBehaviour
     public LevelData levelData;
 
     public int coin1Picked = 0, coin2Picked = 0, coin3Picked = 0;
-
+    public GameObject youwinCanvas;
+    public GameObject bateria1_Hud;
+    public GameObject bateria2_Hud;
+    public GameObject bateria3_Hud;
     private void Start()
     {
         collectedCoins = 0;
@@ -27,6 +31,7 @@ public class CambioEscena : MonoBehaviour
 
     public void retardoEscena()
     {
+
         // Carga la escena de destino
         if (SceneManager.GetActiveScene().buildIndex < 8)
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
@@ -50,6 +55,7 @@ public class CambioEscena : MonoBehaviour
     {
         if (other.CompareTag("Player")) // Asegúrate de que el objeto que toca el collider sea el jugador0
         {
+            
             if(Time.time < levelData.bestTime)
                 levelData.bestTime = Time.time;
 
@@ -59,12 +65,39 @@ public class CambioEscena : MonoBehaviour
             levelData.isComplete = true;
             ManagerGuardo.Instance.Save();
             ComandosSQLite.Instance.InsertarDatosNivel(levelData.retries, coin1Picked, coin2Picked, coin3Picked);
+            
 
-            Invoke("retardoEscena", 1.5f);
-            transicionescena.SetTrigger("Transicion");
+            StartCoroutine(ExampleCoroutine());
+            
 
             doorSound.Play();
-            
+            other.GetComponent<MovimientoJugador>().stop = true;
         }
+    }
+
+
+    IEnumerator ExampleCoroutine()
+    {
+       
+        youwinCanvas.SetActive(true);
+        if(coin1Picked > 0)
+        {
+            bateria1_Hud.SetActive(true);
+        }
+        if (coin2Picked > 0)
+        {
+            bateria2_Hud.SetActive(true);
+        }
+        if (coin3Picked > 0)
+        {
+            bateria3_Hud.SetActive(true);
+        }
+        yield return new WaitForSeconds(3);
+        
+        transicionescena.SetTrigger("Transicion");
+
+        yield return new WaitForSeconds(1.5f);
+        retardoEscena();
+
     }
 }
